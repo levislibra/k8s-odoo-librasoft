@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odoo-svr
+  namespace: odoo
+  labels:
+    app: odoo-svr
+spec:
+  selector:
+    matchLabels:
+      app: odoo-svr
+      tier: frontend
+  replicas: 3
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: odoo-svr
+        tier: frontend
+    spec:
+      containers:
+        - image: levislibra/odoo-librasoft:9.0
+          name: odoo
+          #imagePullPolicy:
+          env:
+          - name: PGUSER
+            value: odoo
+          - name: PGPASSWORD
+            value: odoo
+          - name: PGHOST
+            value: odoo-db
+          - name: PGPORT
+            value: "5432"
+          - name: WORKERS
+            value: "0"
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          ports:
+            - containerPort: 8069
+              name: odoo
+          volumeMounts:
+          - name: odoo-pvc
+            mountPath: /opt/odoo/data
+      volumes:
+      - name: odoo-pvc
+        persistentVolumeClaim:
+          claimName: odoo-pvc

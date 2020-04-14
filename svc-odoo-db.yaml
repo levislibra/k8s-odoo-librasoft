@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: odoo-db
+  namespace: odoo
+  labels:
+    app: odoo-svr
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: odoo-svr
+    tier: backend
+  type: NodePort
